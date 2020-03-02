@@ -1,75 +1,74 @@
 import React, { useState } from "react";
+// import Message from './Message';
 import axios from "axios";
+import Progress from "./Progress";
 
 const Button = () => {
   const [selectedFile, setselectedFile] = useState("");
   const [filename, setFilename] = useState("Choose File");
+  const [uploadedFile, setUploadedFile] = useState("");
+  const [message, setMessage] = useState("");
+  const [uploadPercent, setUploadPercent] = useState(0);
 
   const chooseFile = e => {
-    // console.log("object", e.target.files)
     setselectedFile(e.target.files[0]);
     setFilename(e.target.files[0].name);
   };
 
   const onFormSubmit = e => {
-    e.preventDefault(); // Stop form submit
-    handleUpload(selectedFile).then(response => {
-      console.log(response, "my data");
-    });
+    e.preventDefault();
+    try {
+      handleUpload(selectedFile).then(response => {
+        console.log(response, "my data");
+        const { name } = response.data;
+        console.log("upload name::::;", name);
+        setUploadedFile(name);
+        setMessage('File Uploaded')
+      });
+    } catch (err) {
+      if (err.response.status === 500){
+        console.log("object secrve")
+        setMessage('There was a problem with the server')
+      } else {
+        console.log("error::::777", err.response.data)
+        setMessage('File ish')
+      }
+    }
   };
 
   const handleUpload = async selectedFile => {
     const url = "/upload";
     const formData = new FormData();
     formData.append("file", selectedFile);
-    console.log("file selected", formData);
     const config = {
       headers: {
-        "content-type": "multipart/form-data"
+        "Content-Type": "multipart/form-data"
+      },
+      onUploadProgress: progressEvent => {
+      //  console.log("Progress:-" + Math.round( progressEvent.loaded  / progressEvent.total * 100) + '%');
+        setUploadPercent(
+          parseInt(
+            Math.round((progressEvent.loaded / progressEvent.total) * 100)
+          ))
+        
+        // clear percentage
+        setTimeout(() => setUploadPercent(0), 5000)
       }
     };
-    return axios.post(url, formData, config);
-
-    // console.log("objecty", selectedFile)
-    // const formData = new FormData();
-    // formData.append('file', selectedFile);
-    // console.log("file selected", formData)
-
-    // try {
-    // const result = await axios({
-    //     method: 'POST',
-    //     url: `/upload`,
-    //     // url: `/upload?uploadType=media`,
-    //     // params: {
-    //     //     uploadType: media
-    //     // },
-    //     // data: selectedFile,
-    //      formData,
-    //     // headers: {
-    //     //     // 'Content-Type': 'application/json; charset=UTF-8'
-    //     //     'Content-Type': 'multipart/form-data'
-    //     //     // 'Content-Type': 'application/pdf',
-    //     //     // 'Content-Length': 50000
-    //     // }
-    //     headers: { 'content-type': 'multipart/form-data' },
-    //     // headers: { 'content-type': 'application/x-www-form-urlencoded' },
-
-    //     // url: `https://www.googleapis.com/upload/drive/v3/files?uploadType=media`,
-    //     // formData,
-    //     // headers: {
-    // //         // 'Authorization': `Bearer ${}`,
-    // //         'Content-Type': 'image/jpeg',
-    // //         'Content-Length':  500000
-    // //     }
-    // })
-    // console.log("object33:::", result)
-    // } catch (e) {
-    //     console.log("error::", e)
-    // }
+      const result = await axios.post(url, formData, config);
+      return result
   };
 
   return (
     <div>
+      {/* {message ? <Message msg={message} /> : null} */}
+      {uploadedFile ? (
+        <div>
+          <span>
+            Uploaded Successfully: <strong>{uploadedFile}</strong>
+          </span>
+        </div>
+      ) : message}
       <form onSubmit={onFormSubmit}>
         <div className="custom-file mb-3">
           <input
@@ -84,12 +83,10 @@ const Button = () => {
           </label>
         </div>
 
-        {/* <div>
-                        <input type="file" />
-                    </div> */}
+        <Progress percentage={uploadPercent} />
 
         <div className="">
-          <button type="submit">Upload</button>
+          <button type="submit">Upload PDF</button>
           {/* <button type="submit" onClick={handleUpload}>Upload</button> */}
         </div>
       </form>
