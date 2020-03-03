@@ -55,7 +55,49 @@ app.post("/upload", upload.single("file"), (req, res) => {
     })
     .catch(function(error) {
       console.log("Error:::::::", error);
+    //   CATCH ERRORS: 500, 404
     });
 });
+
+app.post("/list", (req, res) => {
+    res.send('list')
+})
+
+app.post("/download", (req, res) => {
+    // var fileMetadata = {
+    //     'name': 'photo.jpg'
+    //   };
+    //   var media = {
+    //     mimeType: 'image/jpeg',
+    //     body: fs.createReadStream('files/photo.jpg')
+    //   };
+    //   drive.files.create({
+    //     resource: fileMetadata,
+    //     media: media,
+    //     fields: 'id'
+    //   }, function (err, file) {
+    //     if (err) {
+    //       // Handle error
+    //       console.error(err);
+    //     } else {
+    //       console.log('File Id: ', file.id);
+    //     }
+    //   });
+
+    var fileId = '1z5uefMEeY8NX5L2plPM-yGqVVYz-FGCU';
+    var dest = fs.createWriteStream('/tmp/photo.jpg');
+    drive.files.get({
+    fileId: fileId,
+    alt: 'media'
+    })
+    .on('end', function () {
+      console.log('Done');
+    })
+    .on('error', function (err) {
+      console.log('Error during download', err);
+    })
+    .pipe(dest);
+
+})
 
 app.listen(5000, () => console.log("server started on port 5000"));
