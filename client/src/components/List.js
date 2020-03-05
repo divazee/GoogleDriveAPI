@@ -31,10 +31,74 @@ export const List = () => {
     });
   };
 
-  const clicka = list => {
-    console.log("clicka", list);
+  const clicka = async (list) => {
+    // console.log("specific list", list);
+    // const blob = new Blob([list], { type: 'application/pdf' });
+    // const url = window.URL.createObjectURL(blob);
+    // const a = document.createElement('a')
+    // // a.setAttribute('hidden', '');
+    // a.setAttribute('href', url);
+    // a.setAttribute('download', `${list.name}`);
+    // document.body.appendChild(a);
+    // a.click();
+    // document.body.removeChild(a)
+
+    let promise = new Promise((resolve,reject) => {
+
+      resolve( axios.get(`/download/${list.id}/${list.name}`))
+    })
     
+    // var FileSaver = require('file-saver');
+    await axios.get(`/download/${list.id}/${list.name}`
+    // , {
+    //   responseType: 'blob',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     'Accept': 'application/pdf'
+    //   }}
+    )
+  //   .then((response) => {
+  //     const url = window.URL.createObjectURL(new  Blob(response.data))
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.setAttribute('download', 'file.pdf'); //or any other extension
+  //     document.body.appendChild(link);
+  //     link.click();
+  // })
+    .then(response => {
+      const url = window.URL.createObjectURL(new Blob([response]))
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${list.name}`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link)
+      console.log("object", response)
+    })
+    // .then(blob => {
+    //   const url = window.URL.createObjectURL(new Blob([blob]))
+    //   const link = document.createElement('a');
+    //   link.href = url;
+    //   link.setAttribute('download', `${list.name}`);
+    //   document.body.appendChild(link);
+    //   link.click();
+    //   link.parentNode.removeChild(link)
+    // })
+    .catch(e => console.log("error", e))
   };
+
+  const download = data => {
+    const blob = new Blob([data], { type: 'application/pdf' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a')
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'download');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a)
+  }
+  
 
   return (
     <table>
