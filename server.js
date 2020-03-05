@@ -85,6 +85,7 @@ app.get("/list", (req, res) => {
         if (err) return console.log("The API returned an error: " + err);
         const files = result.data.files;
         if (files.length) {
+          console.log("respo:::::::::", result)
           console.log("Files:");
         // 08032496878 
             files.map((file) => {

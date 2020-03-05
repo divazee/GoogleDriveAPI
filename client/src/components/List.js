@@ -43,13 +43,24 @@ export const List = () => {
     // a.click();
     // document.body.removeChild(a)
 
-    let promise = new Promise((resolve,reject) => {
+    // let promise = new Promise((resolve,reject) => {
 
-      resolve( axios.get(`/download/${list.id}/${list.name}`))
-    })
+    //   resolve( axios.get(`/download/${list.id}/${list.name}`))
+    // })
+
+    // let serverResponse = await promise; 
+
+    // const url = window.URL.createObjectURL(new  Blob([serverResponse]))
+    //     const link = document.createElement('a');
+    //     link.href = url;
+    //     link.setAttribute('download', 'file.pdf'); //or any other extension
+    //     document.body.appendChild(link);
+    //     link.click();
+
+
     
     // var FileSaver = require('file-saver');
-    await axios.get(`/download/${list.id}/${list.name}`
+   await axios.get(`/download/${list.id}/${list.name}`
     // , {
     //   responseType: 'blob',
     //   headers: {
@@ -66,14 +77,15 @@ export const List = () => {
   //     link.click();
   // })
     .then(response => {
-      const url = window.URL.createObjectURL(new Blob([response]))
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `${list.name}`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link)
-      console.log("object", response)
+      console.log("object::::::", response)
+      // const url = window.URL.createObjectURL(new Blob([response]))
+      // const link = document.createElement('a');
+      // link.href = url;
+      // link.setAttribute('download', `${list.name}`);
+      // document.body.appendChild(link);
+      // link.click();
+      // link.parentNode.removeChild(link)
+      // console.log("object", response)
     })
     // .then(blob => {
     //   const url = window.URL.createObjectURL(new Blob([blob]))
