@@ -106,7 +106,6 @@ app.get("/download/:id/:name", (req, res) => {
 
   console.log("objectddddddddd", req.params)
   var dest = fs.createWriteStream(`${filepath}`);
-  // var dest = fs.createWriteStream(`tmp/${name}`);
     google.drive({ version: "v3", auth: oAuth2Client })
       .files.get({
       fileId: id,
@@ -120,6 +119,7 @@ app.get("/download/:id/:name", (req, res) => {
         response.data.on('end', () => {
           console.log('Done');
           res.send('done')
+          // res.send(dest)
         })
         .on('error', err => {
           console.log('Error during download', err);
@@ -129,4 +129,19 @@ app.get("/download/:id/:name", (req, res) => {
       })
 });
 
-app.listen(5000, () => console.log("server started on port 5000"));
+app.delete("/delete/:id", (req, res) => {
+  const { id } = req.params;
+  // console.log("object", req.file);
+  // res.send("req");
+  google.drive({ version: "v3", auth: oAuth2Client }).files.delete({
+    fileId: id,
+  },
+  (err, response) => {
+    if (err) {console.log("error::::::::::::::::", err)}
+    else {
+      console.log("it worked..........")
+    }
+  })
+});
+
+app.listen(5050, () => console.log("server started on port 5050"));
